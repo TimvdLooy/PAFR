@@ -1,5 +1,7 @@
 package Console;
 
+import java.util.ArrayList;
+
 public class Main {
 
 	/**
@@ -9,33 +11,35 @@ public class Main {
 	 */
     static Expression buildInterpreterTree() 
     {
+    	ArrayList<Expression> SentenceParts = new ArrayList<Expression>();
+    	
         // Lid woorden
-        Expression terminal1 = new TerminalExpression("De", "The ");
-        Expression terminal2 = new TerminalExpression("Het", "The ");
-        Expression terminal3 = new TerminalExpression("Een", "a ");
+        Expression terminal1 = new TerminalExpression("De", "The");
+        Expression terminal2 = new TerminalExpression("Het", "The");
+        Expression terminal3 = new TerminalExpression("Een", "a");
         
         // Zelfstandige naamwoorden
-        Expression terminal4 = new TerminalExpression("brood", "Bread ");
-        Expression terminal5 = new TerminalExpression("man", "man ");
-        Expression terminal6 = new TerminalExpression("boer", "farmer ");
+        Expression terminal4 = new TerminalExpression("brood", "Bread");
+        Expression terminal5 = new TerminalExpression("man", "man");
+        Expression terminal6 = new TerminalExpression("boer", "farmer");
         
         //Werkwoordelijk deel
-        Expression terminal7 = new TerminalExpression("laat", "lets ");
-        Expression terminal8 = new TerminalExpression("eet", "eats ");
-        Expression terminal9 = new TerminalExpression("koopt", "buys ");
-        Expression terminal10 = new TerminalExpression("snijdt", "cuts ");
+        Expression terminal7 = new TerminalExpression("laat", "lets");
+        Expression terminal8 = new TerminalExpression("eet", "eats");
+        Expression terminal9 = new TerminalExpression("koopt", "buys");
+        Expression terminal10 = new TerminalExpression("snijdt", "cuts");
 
-        // De of Het
+        //De of Het
         Expression alternation1 = new OrRegelWoorden(terminal1, terminal2); 
 
-        // Een of (Het of De)
-        Expression alternation2 = new OrRegelWoorden(terminal3, alternation1);
+        //Een of (Het of De)
+        Expression lidwoord = new OrRegelWoorden(terminal3, alternation1);
         
         //Man of Boer
         Expression alternation3 = new OrRegelWoorden(terminal5, terminal6); 
         
         //Brood of (Man of Boer)
-        Expression alternation4 = new OrRegelWoorden(terminal4, alternation3);
+        Expression zelfstandigNaamwoord = new OrRegelWoorden(terminal4, alternation3);
         
         //eet of koopt
         Expression alternation5 = new OrRegelWoorden(terminal8, terminal9);
@@ -47,13 +51,15 @@ public class Main {
         Expression WerkwoordelijkDeel = new OrRegelWoorden(terminal10, alternation6);
         
         //(Een of (Het of De)) en (Brood of (Man of Boer))
-        Expression NaamWoordelijkDeel = new AndRegelWoorden(alternation2, alternation4);
+        Expression NaamWoordelijkDeel = new AndRegelWoorden(lidwoord, zelfstandigNaamwoord);
         
         //(Een of (Het of De)) en (Brood of (Man of Boer)) en (laat of eet of koopt of snijdt)
         Expression alternation7 = new AndRegelWoorden(NaamWoordelijkDeel, WerkwoordelijkDeel);
         
-        // ((Een of (Het of De)) en (Brood of (Man of Boer)) en (laat of eet of koopt of snijdt)) en (Een of (Het of De)) en (Brood of (Man of Boer)
-        return new AndRegelWoorden(alternation7, NaamWoordelijkDeel);
+        //((Een of (Het of De)) en (Brood of (Man of Boer)) en (laat of eet of koopt of snijdt)) en (Een of (Het of De)) en (Brood of (Man of Boer)
+        Expression returnStatement =  new AndRegelWoorden(alternation7, NaamWoordelijkDeel); //pakt zelfde naamwoordelijk deel
+        
+        return returnStatement;
     }
 
 	
@@ -64,7 +70,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
-        String context = "De man eet brood";
+        String context = "De boer eet";
 
         Expression define = buildInterpreterTree();
 

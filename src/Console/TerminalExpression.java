@@ -18,7 +18,7 @@ public class TerminalExpression extends Expression {
         while (st.hasMoreTokens()) { 
             String test = st.nextToken();
             if (test.equals(literal)) {
-                return englishStr;
+                return englishStr+" ";
             }
         }
         return "false";
